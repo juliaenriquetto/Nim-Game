@@ -118,8 +118,11 @@ class SARSA():
             Return the Q-value for the state 'state' and the action 'action'.
             If no Q-value exists yet in 'self.q', return 0.
         '''        
-
-        raise NotImplementedError
+        key = (tuple(state), action)
+        if key in self.q:
+            return self.q[key]
+        else:
+            return 0
 
     def update_value(self, old_state, action, old_q, reward, future_rewards):
 
@@ -128,6 +131,9 @@ class SARSA():
             given the previous Q-value 'old_q', a current reward 'reward',
             and an estimate of future rewards 'future_rewards'.
         '''
+        key = (tuple(old_state), action)
+        new_q = old_q + self.alpha * (reward + future_rewards - old_q) # Q(s, a) <- Q(s, a) + alpha*(R + gamma(Q(s', a') - Q(s, a))) - SARSA equation
+        self.q[key] = new_q
 
     def choose_action(self, state, epsilon = True):
 
