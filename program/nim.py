@@ -1,6 +1,7 @@
 import math
 import random
 import time
+from typing import List
 
 
 class Nim():
@@ -150,8 +151,27 @@ class SARSA():
 
             If multiple actions have the same Q-value, any of those
             options is an acceptable return value.
-        '''
+        ''' 
+        actions = list(Nim().avaliable_actions(state))
+        
+        # precisa ver se tem ações na lista?
 
+        if epsilon and random.random(actions) < self.epsilon:
+            # Choose a random available action 
+            return random.choice(actions)
+
+        max_value = float("inf") # declare a infinity float for max_value so i can use it
+        best_actions = []       
+        # pick the best action 
+        for action in actions:
+            q_value = self.get_value(state, action)
+            if q_value > max_value:
+                max_value = q_value
+                best_actions = [action]
+            elif q_value == max_value:
+                best_actions.append(action)
+
+        return random.choice(best_actions) # choose the best random choice
 
 class QLearning():
 
