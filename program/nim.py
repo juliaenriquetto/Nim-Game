@@ -254,9 +254,13 @@ class QLearning():
             q_values = {action: self.get_value(state, action)}
         max_q = max(q_values.values())
         
-        for action, q in q_values.items():
-            if q == max_q:
-                best_actions = action
+        if epsilon and random.uniform(0, 1) < self.epsilon:
+            # Choose a random action with probability epsilon
+            return random.choice(actions)
+        else:
+            for action, q in q_values.items():
+                if q == max_q:
+                    best_actions = action
         return best_actions
 
 def train(player, n_episodes):
@@ -293,7 +297,7 @@ def train(player, n_episodes):
                     player.update_model(last[game.player]['state'], last[game.player]['action'], new_state, 0)
 
         # return the trained player
-        return player
+    return player
 
 
 def play(ai, human = None):
@@ -312,7 +316,7 @@ def play(ai, human = None):
             print(f"Pile {i} : {pile}")
 
         # compute avaiable actions
-        available_actions = Nim.available_actions(game.piles)
+        avaliable_actions = Nim().avaliable_actions(game.piles)
 
         # let human make a move
         if game.player == human:
@@ -320,7 +324,7 @@ def play(ai, human = None):
             while True:
                 pile = int(input('Choose a pile: '))
                 count = int(input('Choose a count: '))
-                if (pile, count) in available_actions:
+                if (pile, count) in avaliable_actions:
                     break
                 print('Invalid move, try again')
         # have AI make a move
@@ -337,3 +341,4 @@ def play(ai, human = None):
             print('GAME OVER')
             winner = 'Human' if game.winner == human else 'AI'
             print(f'Winner is {winner}')
+            break
