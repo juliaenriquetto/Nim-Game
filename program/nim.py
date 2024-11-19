@@ -189,8 +189,11 @@ class QLearning():
             Return the Q-value for the state 'state' and the action 'action'.
             If no Q-value exists yet in 'self.q', return 0.
         '''
-
-        raise NotImplementedError
+        key = (tuple(state), action)
+        if key in self.q:
+            return self.q[key]
+        else:
+            return 0
 
     def update_value(self, old_state, action, old_q, reward, future_rewards):
 
@@ -200,7 +203,9 @@ class QLearning():
             and an estimate of future rewards 'future_rewards'.
         '''
 
-        raise NotImplementedError
+        key = (tuple(old_state), action)
+        new_q = old_q + self.alpha * (reward + future_rewards - old_q) #Q(s,a)←Q(s,a)+α×(reward+future_rewards−Q(s,a))
+        self.q[key] = new_q
 
     def best_future_reward(self, state):
 
@@ -213,8 +218,14 @@ class QLearning():
             Q-value in 'self.q'. If there are no available actions
             in 'state', return 0.
         '''
-
-        raise NotImplementedError
+        
+        actions = Nim().avaliable_actions(state)
+        if not actions:
+            return 0
+        # Get the max Q-value for all actions in the current state
+        for action in actions:
+            max_value = max(self.get_value(state, action))
+        return max_value       
 
     def choose_action(self, state, epsilon = True):
 
@@ -232,9 +243,25 @@ class QLearning():
             If multiple actions have the same Q-value, any of those
             options is an acceptable return value.
         '''
-
-        raise NotImplementedError
-
+        actions = list(Nim().avaliable_actions(state))
+        
+        # If no available actions, return None
+        if not actions:
+            return None
+        q_values = {}
+        
+        for action in actions:
+            q_values = {action: self.get_value(state, action)}
+        max_q = max(q_values.values())
+        
+        if epsilon and random.uniform(0, 1) < self.epsilon:
+            # Choose a random action with probability epsilon
+            return random.choice(actions)
+        else:
+            for action, q in q_values.items():
+                if q == max_q:
+                    best_actions = action
+        return best_actions
 
 def train(player, n_episodes):
 
@@ -270,7 +297,7 @@ def train(player, n_episodes):
                     player.update_model(last[game.player]['state'], last[game.player]['action'], new_state, 0)
 
         # return the trained player
-        return player
+    return player
 
 
 def play(ai, human = None):
@@ -289,7 +316,7 @@ def play(ai, human = None):
             print(f"Pile {i} : {pile}")
 
         # compute avaiable actions
-        available_actions = Nim.available_actions(game.piles)
+        avaliable_actions = Nim().avaliable_actions(game.piles)
 
         # let human make a move
         if game.player == human:
@@ -297,7 +324,7 @@ def play(ai, human = None):
             while True:
                 pile = int(input('Choose a pile: '))
                 count = int(input('Choose a count: '))
-                if (pile, count) in available_actions:
+                if (pile, count) in avaliable_actions:
                     break
                 print('Invalid move, try again')
         # have AI make a move
@@ -314,3 +341,4 @@ def play(ai, human = None):
             print('GAME OVER')
             winner = 'Human' if game.winner == human else 'AI'
             print(f'Winner is {winner}')
+            break
