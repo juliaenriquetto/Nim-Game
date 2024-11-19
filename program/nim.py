@@ -218,13 +218,14 @@ class QLearning():
             Q-value in 'self.q'. If there are no available actions
             in 'state', return 0.
         '''
-        
+        values = []
         actions = Nim().avaliable_actions(state)
         if not actions:
             return 0
         # Get the max Q-value for all actions in the current state
         for action in actions:
-            max_value = max(self.get_value(state, action))
+            values.append(self.get_value(state, action))
+        max_value = max(values)
         return max_value       
 
     def choose_action(self, state, epsilon = True):
@@ -251,7 +252,7 @@ class QLearning():
         q_values = {}
         
         for action in actions:
-            q_values = {action: self.get_value(state, action)}
+            q_values[action] = self.get_value(state, action)
         max_q = max(q_values.values())
         
         if epsilon and random.uniform(0, 1) < self.epsilon:
