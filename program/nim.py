@@ -156,7 +156,7 @@ class SARSA():
         
         # precisa ver se tem ações na lista?
 
-        if epsilon and random.random(actions) < self.epsilon:
+        if epsilon and random.random() < self.epsilon:
             # Choose a random available action 
             return random.choice(actions)
 
