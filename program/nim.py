@@ -365,3 +365,39 @@ def play(ai, human = None):
             winner = 'Human' if game.winner == human else 'AI'
             print(f'Winner is {winner}')
             break
+def play_sarsa_vs_qlearning(sarsa, qlearning):
+    game = Nim()
+
+    while True:
+        print("\nCurrent piles:")
+        for i, pile in enumerate(game.piles):
+            print(f"Pile {i}: {pile}")
+
+        avaliable_actions = Nim().avaliable_actions(game.piles)
+
+        if game.player == 0:
+            print("SARSA's turn")
+            state = tuple(game.piles)
+            action = sarsa.choose_action(state, epsilon=False)
+            if action not in avaliable_actions:
+                print("Invalid action chosen by SARSA! Skipping turn.")
+                continue
+            pile, count = action
+            print(f"SARSA chose to take {count} from pile {pile}.")
+        else:
+            print("Q-Learning's turn")
+            state = tuple(game.piles)
+            action = qlearning.choose_action(state, epsilon=False)
+            if action not in avaliable_actions:
+                print("Invalid action chosen by Q-Learning! Skipping turn.")
+                continue
+            pile, count = action
+            print(f"Q-Learning chose to take {count} from pile {pile}.")
+
+        game.move((pile, count))
+
+        if game.winner is not None:
+            print("\nGAME OVER")
+            winner = "SARSA" if game.winner == 0 else "Q-Learning"
+            print(f"Winner is {winner}!")
+            break
