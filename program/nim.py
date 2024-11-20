@@ -110,7 +110,9 @@ class SARSA():
         '''
 
         old_q = self.get_value(old_state, action)
-        best_future = self.best_future_reward(new_state)
+        actions = list(Nim().avaliable_actions(old_state))
+        new_action = random.choice(actions)
+        best_future = self.get_value(old_state, new_action)
         self.update_value(old_state, action, old_q, reward, best_future)
 
     def get_value(self, state, action):
@@ -160,7 +162,7 @@ class SARSA():
             # Choose a random available action 
             return random.choice(actions)
 
-        max_value = float("inf") # declare a infinity float for max_value so i can use it
+        max_value = float("-inf") # declare a infinity float for max_value so i can use it
         best_actions = []       
         # pick the best action 
         for action in actions:
