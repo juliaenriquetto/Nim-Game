@@ -188,10 +188,10 @@ class QLearning():
                 - 'state' is a tuple of remaining piles, e.g. [1, 1, 4, 4]
                 - 'action' is a tuple '(i, j)' for an action
         '''
-
-        self.q = dict()
-        self.alpha = alpha
-        self.epsilon = epsilon
+        # Initialize Q-learning with Q-values, learning rate, and exploration rate
+        self.q = dict() # Q-value table
+        self.alpha = alpha # Learning rate
+        self.epsilon = epsilon # Exploration rate
 
     def update_model(self, old_state, action, new_state, reward):
 
@@ -200,7 +200,7 @@ class QLearning():
             in that state, a new resulting state, and the reward received
             from taking that action.
         '''
-
+        # Update Q-values based on the action taken and reward received
         old_q = self.get_value(old_state, action)
         best_future = self.best_future_reward(new_state)
         self.update_value(old_state, action, old_q, reward, best_future)
@@ -211,6 +211,7 @@ class QLearning():
             Return the Q-value for the state 'state' and the action 'action'.
             If no Q-value exists yet in 'self.q', return 0.
         '''
+        # Get the Q-value for a specific state-action pair
         key = (tuple(state), action)
         if key in self.q:
             return self.q[key]
@@ -224,7 +225,7 @@ class QLearning():
             given the previous Q-value 'old_q', a current reward 'reward',
             and an estimate of future rewards 'future_rewards'.
         '''
-
+        # Update Q-value using the Q-learning update rule
         key = (tuple(old_state), action)
         new_q = old_q + self.alpha * (reward + future_rewards - old_q) #Q(s,a)←Q(s,a)+α×(reward+future_rewards−Q(s,a))
         self.q[key] = new_q
@@ -240,6 +241,7 @@ class QLearning():
             Q-value in 'self.q'. If there are no available actions
             in 'state', return 0.
         '''
+        # Get the maximum Q-value for all possible actions in a state
         values = []
         actions = Nim().avaliable_actions(state)
         if not actions:
@@ -266,6 +268,7 @@ class QLearning():
             If multiple actions have the same Q-value, any of those
             options is an acceptable return value.
         '''
+        # Choose an action using epsilon-greedy strategy
         actions = list(Nim().avaliable_actions(state))
         
         # If no available actions, return None
@@ -281,6 +284,7 @@ class QLearning():
             # Choose a random action with probability epsilon
             return random.choice(actions)
         else:
+            # Greedy action selection (best action)
             for action, q in q_values.items():
                 if q == max_q:
                     best_actions = action
